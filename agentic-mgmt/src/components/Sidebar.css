@@ -1,0 +1,248 @@
+.sidebar {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 240px;
+  height: calc(100vh - 16px);
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #e4e4e4;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  transition: width 250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar.collapsed {
+  width: 40px;
+  height: auto;
+  padding: 8px;
+  justify-content: flex-start;
+}
+
+.sidebar-expand-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 150ms ease;
+}
+
+.sidebar-expand-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-expand-btn img {
+  width: 21px;
+  height: 21px;
+  display: block;
+}
+
+/* --- Top group ------------------------------------------------------- */
+.sidebar-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar-header-left {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.sidebar-project {
+  font-size: 12px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: 0;
+}
+
+/* --- Reusable 24px icon containers ---------------------------------- */
+.sidebar-icon {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  flex-shrink: 0;
+}
+
+.sidebar-icon svg,
+.sidebar-iconbtn svg,
+.sidebar-icon img,
+.sidebar-iconbtn img {
+  width: 21px;
+  height: 21px;
+  display: block;
+}
+
+.sidebar-iconbtn {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: #000000;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.sidebar-iconbtn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* --- New Session button --------------------------------------------- */
+.sidebar-newbtn {
+  width: 100%;
+  background: #fbfbfb;
+  border: 1px solid #e4e4e4;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #151414;
+  text-align: left;
+  cursor: pointer;
+  letter-spacing: 0;
+  font-family: inherit;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.sidebar-newbtn:hover {
+  background: #f3f3f3;
+  border-color: #d6d6d6;
+}
+
+/* --- Sessions section ----------------------------------------------- */
+.sidebar-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-sessions-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar-sessions-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #b4b3b3;
+  padding-left: 8px;
+}
+
+.sidebar-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 11px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.sidebar-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.sidebar-item.active {
+  background: #eaeaea;
+}
+
+.sidebar-item.active:hover {
+  background: #e4e4e4;
+}
+
+.sidebar-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar-item-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #000000;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.sidebar-item-meta {
+  font-size: 10px;
+  font-weight: 400;
+  color: #aba8a8;
+  flex-shrink: 0;
+}
+
+.sidebar-item-date {
+  font-size: 10px;
+  font-weight: 400;
+  color: #aba8a8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Footer (user + settings) --------------------------------------- */
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #000000;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,66 @@
+.agent-response {
+  position: absolute;
+  left: 50%;
+  /* sits above the 52px-tall prompt bar (which is 24px from bottom): 24 + 52 + 16 gap */
+  bottom: 92px;
+  transform: translateX(-50%);
+  width: 232px;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.agent-response-mask {
+  position: relative;
+  max-height: calc(1.55em * 3); /* ~3 lines at 14px line-height */
+  overflow: hidden;
+  /* fade old text upward */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 28px,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 28px,
+    #000 100%
+  );
+  padding: 8px 16px 4px; /* match PromptBar's 16px horizontal padding */
+}
+
+.agent-response-text {
+  font-size: 11px;
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0;
+}
+
+.agent-response-text span {
+  display: inline-block;
+  white-space: pre;
+}
+
+.agent-thinking {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+}
+
+.agent-thinking-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  animation: thinking-bounce 1.2s ease-in-out infinite;
+}
+
+.agent-thinking-dot:nth-child(2) { animation-delay: 0.15s; }
+.agent-thinking-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes thinking-bounce {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40%           { opacity: 1;    transform: translateY(-2px); }
+}

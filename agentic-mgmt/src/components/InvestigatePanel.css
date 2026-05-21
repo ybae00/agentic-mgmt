@@ -1,0 +1,438 @@
+/* The whole right-side panel is a faux desktop scene. */
+.desktop {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  bottom: 8px;
+  width: calc(50vw - 16px);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background: #050610;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+}
+
+/* Wallpaper — subtle blue/purple gradient with a soft glow. */
+.desktop-wallpaper {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(80% 50% at 20% 25%, rgba(74, 158, 255, 0.18), transparent 60%),
+    radial-gradient(60% 50% at 80% 70%, rgba(155, 74, 255, 0.15), transparent 60%),
+    linear-gradient(180deg, #0a0e1f 0%, #060814 100%);
+  pointer-events: none;
+}
+.desktop-wallpaper-glow {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(closest-side, rgba(74, 158, 255, 0.06), transparent);
+  filter: blur(20px);
+}
+
+/* --- Menu bar ---------------------------------------------------------- */
+.menubar {
+  position: relative;
+  z-index: 2;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  background: rgba(10, 10, 14, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 9px;
+  font-weight: 400;
+  color: rgba(240, 240, 240, 0.85);
+}
+
+.menubar-left,
+.menubar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menubar-apple {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+.menubar-app {
+  font-weight: 500;
+}
+
+.menubar-item {
+  color: rgba(240, 240, 240, 0.65);
+}
+
+.menubar-status {
+  display: inline-flex;
+  align-items: center;
+  color: rgba(240, 240, 240, 0.7);
+}
+
+/* --- Stage holds the app window --------------------------------------- */
+.desktop-stage {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  min-height: 0;
+}
+
+/* --- App window -------------------------------------------------------- */
+.appwin {
+  width: 100%;
+  height: 100%;
+  max-width: 560px;
+  background: rgba(14, 14, 18, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+.appwin-chrome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 26px;
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.appwin-traffic {
+  display: flex;
+  gap: 5px;
+}
+.tl {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+.tl-red { background: #ff5f57; }
+.tl-yellow { background: #febc2e; }
+.tl-green { background: #28c840; }
+
+.appwin-title {
+  flex: 1;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: rgba(240, 240, 240, 0.65);
+}
+
+.appwin-meta {
+  font-size: 8px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.4);
+}
+
+.appwin-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* --- CAD view ---------------------------------------------------------- */
+.cadview {
+  display: flex;
+  height: 100%;
+}
+
+.cadview-sidebar {
+  width: 130px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 8px;
+}
+
+.cadview-sidebar-title {
+  font-size: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.cadview-tree {
+  list-style: none;
+  font-size: 9px;
+  color: var(--text);
+  font-weight: 300;
+}
+.cadview-tree li {
+  padding: 2px 0;
+}
+.cadview-tree li.indent { padding-left: 8px; }
+.cadview-tree li.indent2 { padding-left: 16px; }
+.cadview-tree li.flagged {
+  color: #e05454;
+}
+
+.cadview-viewport {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.cadview-viewport svg {
+  max-height: 100%;
+  max-width: 75%;
+}
+
+.cadview-callout {
+  position: absolute;
+  top: 24%;
+  right: 12%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: rgba(224, 84, 84, 0.1);
+  border: 1px solid rgba(224, 84, 84, 0.4);
+  border-radius: 6px;
+}
+.cadview-callout-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e05454;
+  box-shadow: 0 0 10px rgba(224, 84, 84, 0.6);
+}
+.cadview-callout-label {
+  font-size: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+.cadview-callout-value {
+  font-size: 11px;
+  font-weight: 500;
+  color: #e05454;
+}
+.cadview-callout-meta {
+  color: var(--text-secondary);
+  font-weight: 300;
+  font-size: 9px;
+  margin-left: 2px;
+}
+
+/* --- Python view ------------------------------------------------------ */
+.pyview {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #0a0a0a;
+}
+
+.pyview-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 6px 8px 0;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pyview-tab {
+  padding: 4px 10px;
+  font-size: 9px;
+  color: var(--text-secondary);
+  border-radius: 4px 4px 0 0;
+  background: rgba(255, 255, 255, 0.03);
+}
+.pyview-tab.active {
+  color: var(--text);
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: none;
+}
+
+.pyview-pre {
+  flex: 1;
+  margin: 0;
+  padding: 12px 14px;
+  font-family: ui-monospace, 'JetBrains Mono', Menlo, monospace;
+  font-size: 10px;
+  line-height: 1.55;
+  color: rgba(240, 240, 240, 0.85);
+  overflow: auto;
+}
+.pyview-pre code { white-space: pre-wrap; }
+
+.pyc-meta { color: rgba(240, 240, 240, 0.5); }
+.pyc-dim  { color: rgba(240, 240, 240, 0.4); }
+.pyc-step { color: #4a9eff; }
+.pyc-out  { color: rgba(240, 240, 240, 0.9); }
+.pyc-ok   { color: #4cd2a1; }
+
+/* --- Docs view -------------------------------------------------------- */
+.docview {
+  height: 100%;
+  background: #f6f5ee;
+  color: #1a1a1a;
+  padding: 18px 24px;
+  overflow: auto;
+}
+
+.docview-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+.docview-sub {
+  font-size: 9px;
+  color: #6a6a6a;
+  margin-bottom: 14px;
+}
+
+.docview-page {
+  background: #fff;
+  border-radius: 4px;
+  padding: 16px 18px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.docview-h {
+  font-size: 10px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+.docview-p {
+  font-size: 9px;
+  line-height: 1.6;
+  color: #2a2a2a;
+  margin-bottom: 6px;
+}
+
+.docview-p.docview-meta {
+  font-family: ui-monospace, Menlo, monospace;
+  color: #6a6a6a;
+}
+
+.docview-strike {
+  text-decoration: line-through;
+  color: #c14242;
+}
+
+.docview-add {
+  background: rgba(28, 160, 80, 0.18);
+  color: #1a6f3a;
+  padding: 0 2px;
+}
+
+/* --- Dock ------------------------------------------------------------- */
+.dock {
+  position: relative;
+  z-index: 2;
+  margin: 0 auto 12px;
+  padding: 6px 10px;
+  background: rgba(20, 20, 30, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  display: flex;
+  gap: 8px;
+  align-items: end;
+}
+
+.dock-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 200ms ease;
+}
+
+.dock-icon svg { width: 18px; height: 18px; }
+
+.dock-icon:hover {
+  transform: translateY(-2px) scale(1.08);
+}
+
+.dock-icon.active::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #f0f0f0;
+}
+
+.dock-icon-cad { background: linear-gradient(180deg, #4a9eff, #2a6dcc); }
+.dock-icon-py { background: linear-gradient(180deg, #5fbf6f, #2f7a44); }
+.dock-icon-doc { background: linear-gradient(180deg, #4a8dff, #3a6acc); }
+.dock-icon-mail { background: linear-gradient(180deg, #56c8ff, #2890d6); }
+.dock-icon-term { background: linear-gradient(180deg, #2a2a2a, #0a0a0a); }
+.dock-icon-finder { background: linear-gradient(180deg, #6fa5f0, #3a6acc); }
+
+/* --- Action bar (Back / Approve) -------------------------------------- */
+.desktop-actions {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(10, 10, 14, 0.65);
+  backdrop-filter: blur(20px);
+}
+
+.desktop-btn {
+  flex: 1;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, transform 100ms ease;
+}
+.desktop-btn:active { transform: scale(0.97); }
+
+.desktop-btn.primary {
+  background: var(--accent);
+  color: #0a0a0a;
+  border: 1px solid var(--accent);
+}
+.desktop-btn.primary:hover { background: #66adff; }
+
+.desktop-btn.ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.desktop-btn.ghost:hover { border-color: rgba(255, 255, 255, 0.4); }

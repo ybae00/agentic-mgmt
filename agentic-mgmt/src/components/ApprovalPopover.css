@@ -1,0 +1,74 @@
+.approval-popover {
+  width: 260px;
+  background: #fff;
+  border: 1px solid #d67600;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+  font-family: 'Geist', 'Inter', system-ui, sans-serif;
+}
+
+.approval-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.approval-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #d67600;
+}
+
+.approval-body {
+  font-size: 12px;
+  font-weight: 400;
+  color: #b1b1b1;
+  line-height: 1.45;
+}
+
+.approval-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.approval-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 400;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: background 120ms ease, transform 80ms ease;
+}
+
+.approval-btn:active {
+  transform: scale(0.97);
+}
+
+.approval-btn-primary {
+  background: rgba(6, 84, 255, 0.75);
+  color: #fff;
+  border: none;
+}
+
+.approval-btn-primary:hover {
+  background: rgba(6, 84, 255, 0.9);
+}
+
+.approval-btn-outline {
+  background: #eaeaea;
+  color: #000;
+  border: none;
+}
+
+.approval-btn-outline:hover {
+  background: #ddd;
+}

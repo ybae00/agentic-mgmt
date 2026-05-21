@@ -1,0 +1,232 @@
+/* ================================================================== */
+/* Welcome page                                                       */
+/* ================================================================== */
+
+.welcome {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.welcome-glow {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(42, 114, 224, 0.08) 0%,
+    rgba(42, 114, 224, 0.02) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.welcome-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 480px;
+  padding: 0 24px;
+}
+
+.welcome-badge {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(42, 114, 224, 0.08);
+  padding: 5px 12px;
+  border-radius: 100px;
+  margin-bottom: 28px;
+}
+
+.welcome-title {
+  font-size: 64px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.welcome-etymology {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  letter-spacing: 0.01em;
+}
+
+.welcome-etymology em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.welcome-description {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  max-width: 400px;
+}
+
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.welcome-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+  background: var(--text);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 200ms ease, transform 150ms ease;
+}
+
+.welcome-start:hover {
+  background: #333333;
+}
+
+.welcome-start:active {
+  transform: scale(0.97);
+}
+
+.welcome-skip {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 200ms ease;
+}
+
+.welcome-skip:hover {
+  color: var(--text-secondary);
+}
+
+/* ================================================================== */
+/* Tour — backdrop + spotlight + tooltip                              */
+/* ================================================================== */
+
+.onboarding-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  pointer-events: all;
+}
+
+.onboarding-spotlight {
+  position: fixed;
+  z-index: 999;
+  border-radius: 16px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.52);
+  pointer-events: none;
+  will-change: top, left, width, height;
+}
+
+.onboarding-tooltip {
+  position: fixed;
+  z-index: 1001;
+  width: 280px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.onboarding-tooltip-header {
+  margin-bottom: 12px;
+}
+
+.onboarding-tooltip-step {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.onboarding-tooltip-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.onboarding-tooltip-body {
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.onboarding-tooltip-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.onboarding-btn-skip {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 4px;
+  transition: color 200ms ease;
+}
+
+.onboarding-btn-skip:hover {
+  color: var(--text-secondary);
+}
+
+.onboarding-btn-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #ffffff;
+  background: var(--text);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 200ms ease, transform 150ms ease;
+}
+
+.onboarding-btn-next:hover {
+  background: #333333;
+}
+
+.onboarding-btn-next:active {
+  transform: scale(0.97);
+}
