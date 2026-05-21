@@ -23,6 +23,9 @@
   height: auto;
   padding: 8px;
   justify-content: flex-start;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .sidebar-expand-btn {

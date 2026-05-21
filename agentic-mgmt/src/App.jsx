@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import Sidebar from './components/Sidebar.jsx'
 import PromptBar from './components/PromptBar.jsx'
 import ChatPanel from './components/ChatPanel.jsx'
@@ -34,6 +34,8 @@ export default function App() {
   const [onboarding, setOnboarding] = useState(!isOnboardingComplete())
   const [askNousData, setAskNousData] = useState(null)
   const [chatOpen, setChatOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [chatFolded, setChatFolded] = useState(false)
 
   // --- Demo runner (only active in demo mode) ---
   const demoRunner = useDemoRunner({
@@ -228,6 +230,7 @@ export default function App() {
     setInvestigation(null)
     setActiveSessionId('new')
     setChatOpen(false)
+    setChatFolded(false)
     setAskNousData(null)
   }
 
@@ -251,6 +254,8 @@ export default function App() {
         onSelect={handleSelectSession}
         onNewSession={handleNewSession}
         onSettings={() => setSettingsOpen(true)}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
       />
 
       {showGraph && (
@@ -264,6 +269,8 @@ export default function App() {
           }
           approvalNodeId={effectiveApprovalNodeId}
           compressed={!!investigation}
+          sidebarCollapsed={sidebarCollapsed}
+          chatFolded={chatFolded}
           onApprove={approve}
           onInvestigate={handleInvestigate}
           onSeeTask={handleSeeTask}
@@ -272,7 +279,7 @@ export default function App() {
       )}
 
       <AnimatePresence>
-        {chatOpen && !investigation && (
+        {chatOpen && !investigation && !chatFolded && (
           <ChatPanel
             key="chat-panel"
             mode={mode}
@@ -287,9 +294,23 @@ export default function App() {
             askNousData={askNousData}
             onAskNousConsumed={() => setAskNousData(null)}
             askNousFn={mode === 'real' ? realAgent.askNous : null}
+            onFold={() => setChatFolded(true)}
           />
         )}
       </AnimatePresence>
+
+      {chatOpen && !investigation && chatFolded && (
+        <button
+          className="chat-unfold-btn"
+          type="button"
+          aria-label="Expand chat panel"
+          onClick={() => setChatFolded(false)}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+      )}
 
       <AnimatePresence>
         {!submitted && (

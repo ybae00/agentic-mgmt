@@ -96,6 +96,7 @@ export default function ChatPanel({
   taskName, promptText, responseText, thinking,
   askNousData, onAskNousConsumed,
   askNousFn,
+  onFold,
 }) {
   const [tabs, setTabs] = useState([
     { id: 1, name: taskName || 'New task', prompt: promptText, isNew: false },
@@ -105,13 +106,26 @@ export default function ChatPanel({
   const [input, setInput] = useState('')
   const [askNousThinking, setAskNousThinking] = useState(false)
   const [askNousResponse, setAskNousResponse] = useState(null)
+  const [followUpMessages, setFollowUpMessages] = useState([])
+  const [followUpThinking, setFollowUpThinking] = useState(false)
 
   const isFirstLoad = useRef(true)
+  const contentRef = useRef(null)
   const activeTab = tabs.find((t) => t.id === activeTabId)
   const isNewChat = activeTab?.isNew
   const isAskNousTab = activeTab?.askNous != null
 
   const askTimerRef = useRef(null)
+
+  const scrollToBottom = useCallback(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = contentRef.current.scrollHeight
+    }
+  }, [])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [followUpMessages, followUpThinking, scrollToBottom])
 
   useEffect(() => {
     if (!askNousData) return
@@ -128,6 +142,7 @@ export default function ChatPanel({
     setTabs((prev) => [...prev, newTab])
     setActiveTabId(next)
     setInput('')
+    setFollowUpMessages([])
     setAskNousThinking(true)
     setAskNousResponse(null)
 
@@ -155,11 +170,61 @@ export default function ChatPanel({
     setTabs((prev) => [...prev, newTab])
     setActiveTabId(next)
     setInput('')
+    setFollowUpMessages([])
   }
 
   function handleSelectTab(id) {
     setActiveTabId(id)
     setInput('')
+  }
+
+  function handleSend() {
+    const text = input.trim()
+    if (!text || followUpThinking) return
+
+    const userMsg = { role: 'user', content: text }
+    setFollowUpMessages((prev) => [...prev, userMsg])
+    setInput('')
+    setFollowUpThinking(true)
+
+    if (mode === 'real') {
+      const messages = [{ role: 'user', content: text }]
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages, stream: false }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          const answer = data.content?.[0]?.text || data.error || 'No response received.'
+          setFollowUpMessages((prev) => [...prev, { role: 'assistant', content: answer }])
+          setFollowUpThinking(false)
+        })
+        .catch(() => {
+          setFollowUpMessages((prev) => [...prev, { role: 'assistant', content: 'Sorry, something went wrong.' }])
+          setFollowUpThinking(false)
+        })
+    } else {
+      setTimeout(() => {
+        const demoResponses = [
+          'Understood. I\'ve noted that and will factor it into the current review.',
+          'Good point. Let me cross-reference that with the simulation data.',
+          'I\'ll take a closer look at that section. Give me a moment.',
+          'That aligns with what I found in the CAD model. The measurements check out.',
+          'I\'ve updated the review notes with your feedback.',
+        ]
+        const answer = demoResponses[Math.floor(Math.random() * demoResponses.length)]
+        setFollowUpMessages((prev) => [...prev, { role: 'assistant', content: answer }])
+        setFollowUpThinking(false)
+      }, 800 + Math.random() * 600)
+    }
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
   }
 
   const hasInput = input.trim().length > 0
@@ -204,7 +269,7 @@ export default function ChatPanel({
         {mode === 'real' && (
           <span className="chat-mode-badge">REAL</span>
         )}
-        <button className="chat-iconbtn" type="button" aria-label="Fold panel">
+        <button className="chat-iconbtn" type="button" aria-label="Fold panel" onClick={onFold}>
           <img src={rightFoldIcon} alt="" />
         </button>
       </motion.div>
@@ -231,6 +296,7 @@ export default function ChatPanel({
       {!isNewChat && (
         <motion.div
           className="chat-content"
+          ref={contentRef}
           key={activeTabId}
           initial={isFirstLoad.current
             ? { x: -200, y: 180, opacity: 1 }
@@ -322,6 +388,28 @@ export default function ChatPanel({
               )
             )}
           </div>
+
+          {/* Follow-up messages */}
+          {followUpMessages.map((msg, idx) => (
+            <div key={idx} className={msg.role === 'user' ? 'chat-prompt-box chat-followup' : 'chat-response chat-followup'}>
+              {msg.role === 'user' ? (
+                <p className="chat-prompt-text">{msg.content}</p>
+              ) : (
+                <p className="chat-response-text">{msg.content}</p>
+              )}
+            </div>
+          ))}
+
+          {/* Follow-up thinking indicator */}
+          {followUpThinking && (
+            <div className="chat-response chat-followup">
+              <div className="chat-thinking">
+                <span className="chat-thinking-dot" />
+                <span className="chat-thinking-dot" />
+                <span className="chat-thinking-dot" />
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
 
@@ -335,13 +423,19 @@ export default function ChatPanel({
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Plan, leave comment, or tag @nous"
         />
         <div className="chat-input-actions">
           <button className="chat-iconbtn" type="button" aria-label="Attach file">
             <img src={fileIcon} alt="" />
           </button>
-          <button className={`chat-sendbtn ${hasInput ? 'active' : ''}`} type="button" aria-label="Send">
+          <button
+            className={`chat-sendbtn ${hasInput ? 'active' : ''}`}
+            type="button"
+            aria-label="Send"
+            onClick={handleSend}
+          >
             <img src={sendIcon} alt="" />
           </button>
         </div>

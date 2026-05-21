@@ -1,13 +1,22 @@
 .graph {
   position: absolute;
   top: 24px;
-  left: 268px; /* sidebar (220) + 24 + 24 */
+  left: 268px;
   right: 24px;
   bottom: 24px;
   z-index: 5;
   border-radius: 6px;
   overflow: hidden;
-  transition: right 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: left 500ms cubic-bezier(0.22, 1, 0.36, 1),
+              right 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.graph.sidebar-collapsed {
+  left: 68px;
+}
+
+.graph.chat-folded {
+  right: 24px;
 }
 
 .graph.compressed {

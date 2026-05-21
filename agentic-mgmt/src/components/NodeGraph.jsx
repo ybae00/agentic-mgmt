@@ -7,9 +7,11 @@ import './NodeGraph.css'
 
 const STATE_COLORS = {
   active: '#2a72e0',
-  complete: '#2a9d6f',
+  complete: '#888888',
   'needs-approval': '#FF9900',
 }
+
+const FINAL_COLOR = '#2a9d6f'
 
 const HALO_COLORS = {
   active: 'rgba(42, 114, 224, ',
@@ -178,6 +180,8 @@ export default function NodeGraph({
   approvalPending,
   approvalNodeId,
   compressed,
+  sidebarCollapsed,
+  chatFolded,
   onApprove,
   onInvestigate,
   onSeeTask,
@@ -288,7 +292,9 @@ export default function NodeGraph({
     return (node, ctx, globalScale) => {
       const isAnchor = node.branch === 'root' || node.branch === 'final'
       const r = isAnchor ? 7.5 : 5.25
-      const color = STATE_COLORS[node.state] || STATE_COLORS.complete
+      const color = node.branch === 'final' && node.state === 'complete'
+        ? FINAL_COLOR
+        : STATE_COLORS[node.state] || STATE_COLORS.complete
 
       // Dim non-neighbors when a node is selected (Obsidian-style focus).
       const dim = neighborSet && !neighborSet.has(node.id)
@@ -450,7 +456,7 @@ export default function NodeGraph({
   return (
     <div
       ref={containerRef}
-      className={`graph ${compressed ? 'compressed' : ''}`}
+      className={`graph ${compressed ? 'compressed' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${chatFolded ? 'chat-folded' : ''}`}
     >
       {size.w > 0 && size.h > 0 && (
        <div className="graph-canvas-wrap">

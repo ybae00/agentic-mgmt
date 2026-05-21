@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import './Sidebar.css'
 import logoIcon from '../assets/icons/logo.svg'
 import sidebarFoldIcon from '../assets/icons/sidebar-fold.svg'
@@ -6,8 +5,7 @@ import searchIcon from '../assets/icons/search.svg'
 import userIcon from '../assets/icons/user.svg'
 import settingIcon from '../assets/icons/setting.svg'
 
-export default function Sidebar({ sessions, onSelect, onNewSession, onSettings }) {
-  const [collapsed, setCollapsed] = useState(false)
+export default function Sidebar({ sessions, onSelect, onNewSession, onSettings, collapsed, onToggleCollapse }) {
   const items = sessions.filter((s) => s.id !== 'new')
 
   if (collapsed) {
@@ -17,7 +15,7 @@ export default function Sidebar({ sessions, onSelect, onNewSession, onSettings }
           className="sidebar-expand-btn"
           type="button"
           aria-label="Expand sidebar"
-          onClick={() => setCollapsed(false)}
+          onClick={() => onToggleCollapse?.()}
         >
           <img src={logoIcon} alt="Logo" />
         </button>
@@ -37,7 +35,7 @@ export default function Sidebar({ sessions, onSelect, onNewSession, onSettings }
             className="sidebar-iconbtn"
             aria-label="Toggle panel"
             type="button"
-            onClick={() => setCollapsed((c) => !c)}
+            onClick={() => onToggleCollapse?.()}
           >
             <img src={sidebarFoldIcon} alt="Toggle panel" />
           </button>
