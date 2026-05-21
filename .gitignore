@@ -1,0 +1,14 @@
+# Vercel
+.vercel
+.env*.local
+.env.production.local
+.env.development.local
+.env.preview.local
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
