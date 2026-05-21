@@ -189,6 +189,10 @@ function computeTooltipPosition(rect, placement, pad) {
 
 export function isOnboardingComplete() {
   try {
+    if (new URLSearchParams(window.location.search).has('onboarding')) {
+      localStorage.removeItem(STORAGE_KEY)
+      return false
+    }
     return localStorage.getItem(STORAGE_KEY) === 'true'
   } catch {
     return false
