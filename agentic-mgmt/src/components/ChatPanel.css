@@ -298,3 +298,15 @@ svg.chat-node-icon {
   height: 16px;
   display: block;
 }
+
+/* Mode badge */
+.chat-mode-badge {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: linear-gradient(135deg, #4a9eff, #7c3aed);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+}

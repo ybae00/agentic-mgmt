@@ -8,6 +8,7 @@ import InvestigatePanel from './components/InvestigatePanel.jsx'
 import SettingsPanel from './components/SettingsPanel.jsx'
 import Onboarding, { isOnboardingComplete } from './components/Onboarding.jsx'
 import { useDemoRunner } from './hooks/useDemoRunner.js'
+import { useRealAgent } from './hooks/useRealAgent.js'
 import { PROMPT_HINT, INITIAL_RESPONSE, FINAL_RESPONSE } from './data/demoScript.js'
 import {
   SESSIONS,
@@ -19,12 +20,11 @@ import './App.css'
 const APPROVAL_NODE_ID = 'cad-approval'
 
 export default function App() {
+  const [mode, setMode] = useState('demo')
   const [submitted, setSubmitted] = useState(false)
+  const [submittedPrompt, setSubmittedPrompt] = useState('')
   const [thinking, setThinking] = useState(false)
   const [responseText, setResponseText] = useState('')
-  // When set, the desktop view slides in. The object holds the node we're
-  // looking at + whether this is the approval flow (which shows the
-  // "Approve fix" button instead of just "Close").
   const [investigation, setInvestigation] = useState(null)
   const [activeSessionId, setActiveSessionId] = useState('new')
   const [hasSubmittedOnce, setHasSubmittedOnce] = useState(false)
@@ -35,12 +35,9 @@ export default function App() {
   const [askNousData, setAskNousData] = useState(null)
   const [chatOpen, setChatOpen] = useState(false)
 
-  // Demo runner only ticks when the Falcon 9 session is in focus AND
-  // the prompt has been submitted. Switching away pauses the visuals
-  // (the timeline keeps running so nodes finish appearing in the
-  // background — the user just isn't watching them).
-  const { states, approvalPending, approve } = useDemoRunner({
-    active: submitted,
+  // --- Demo runner (only active in demo mode) ---
+  const demoRunner = useDemoRunner({
+    active: mode === 'demo' && submitted,
     onFinalResponse: () => {
       setThinking(true)
       setTimeout(() => {
@@ -50,12 +47,62 @@ export default function App() {
     },
   })
 
+  // --- Real agent (only active in real mode) ---
+  const realAgent = useRealAgent({
+    active: mode === 'real' && submitted,
+    prompt: mode === 'real' && submitted ? submittedPrompt : null,
+  })
+
+  // Unified interface based on mode
+  const states = mode === 'demo' ? demoRunner.states : realAgent.states
+  const approvalPending =
+    mode === 'demo' ? demoRunner.approvalPending : realAgent.approvalPending
+  const approve = mode === 'demo' ? demoRunner.approve : realAgent.approve
+
+  const currentThinking =
+    mode === 'demo' ? thinking : realAgent.thinking
+  const currentResponseText =
+    mode === 'demo'
+      ? responseText
+      : realAgent.finalResponseText || realAgent.responseText
+
+  // Build a real-time session from agent-generated nodes
+  const realSession = useMemo(
+    () => ({
+      id: 'real-session',
+      label: submittedPrompt
+        ? submittedPrompt.slice(0, 40) + (submittedPrompt.length > 40 ? '…' : '')
+        : 'AI Session',
+      meta: 'now',
+      kind: 'demo',
+      nodes: realAgent.nodes,
+    }),
+    [realAgent.nodes, submittedPrompt],
+  )
+
   const sessions = useMemo(() => {
-    const order = hasSubmittedOnce ? POST_SUBMIT_SESSION_ORDER : DEFAULT_SESSION_ORDER
+    const order = hasSubmittedOnce
+      ? POST_SUBMIT_SESSION_ORDER
+      : DEFAULT_SESSION_ORDER
     const ids = order.filter((id) => id !== 'new')
-    const falcon9Entry = ids.includes('falcon9')
-      ? [{ ...SESSIONS.falcon9, active: 'falcon9' === activeSessionId }]
-      : []
+
+    let topEntry = []
+    if (mode === 'real' && submitted) {
+      topEntry = [
+        {
+          ...realSession,
+          active: activeSessionId === 'real-session',
+        },
+      ]
+    } else if (ids.includes('falcon9')) {
+      topEntry = [
+        {
+          ...SESSIONS.falcon9,
+          active: 'falcon9' === activeSessionId,
+        },
+      ]
+    }
+
     const dynamicList = dynamicSessions.map((s) => ({
       ...s,
       active: s.id === activeSessionId,
@@ -66,33 +113,47 @@ export default function App() {
         ...SESSIONS[id],
         active: id === activeSessionId,
       }))
-    return [...falcon9Entry, ...dynamicList, ...historyList]
-  }, [hasSubmittedOnce, activeSessionId, dynamicSessions])
+    return [...topEntry, ...dynamicList, ...historyList]
+  }, [
+    hasSubmittedOnce,
+    activeSessionId,
+    dynamicSessions,
+    mode,
+    submitted,
+    realSession,
+  ])
 
   const activeSession =
-    SESSIONS[activeSessionId] ??
-    dynamicSessions.find((s) => s.id === activeSessionId) ??
-    SESSIONS.new
+    mode === 'real' && submitted && activeSessionId === 'real-session'
+      ? realSession
+      : SESSIONS[activeSessionId] ??
+        dynamicSessions.find((s) => s.id === activeSessionId) ??
+        SESSIONS.new
 
-  function handleSubmit() {
+  function handleSubmit(text) {
     if (submitted) return
+    const promptText = text || PROMPT_HINT
+    setSubmittedPrompt(promptText)
     setSubmitted(true)
     setHasSubmittedOnce(true)
-    setActiveSessionId('falcon9')
     setChatOpen(true)
-    setThinking(true)
-    setTimeout(() => {
-      setThinking(false)
-      setResponseText(INITIAL_RESPONSE)
-    }, 700)
+
+    if (mode === 'demo') {
+      setActiveSessionId('falcon9')
+      setThinking(true)
+      setTimeout(() => {
+        setThinking(false)
+        setResponseText(INITIAL_RESPONSE)
+      }, 700)
+    } else {
+      setActiveSessionId('real-session')
+    }
   }
 
   function handleSelectSession(id) {
     if (id === activeSessionId) return
     setActiveSessionId(id)
-    // Don't close the investigate panel just because the user peeks at
-    // another session — but do hide the chrome that belongs to falcon9.
-    if (id !== 'falcon9') setInvestigation(null)
+    if (id !== 'falcon9' && id !== 'real-session') setInvestigation(null)
   }
 
   function handleNewSession() {
@@ -104,14 +165,19 @@ export default function App() {
       id,
       label: 'New session',
       meta: 'now',
-      date: now.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      }).replace(/ /g, ' ') + ', ' + now.toLocaleTimeString('en-GB', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
+      date:
+        now
+          .toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          })
+          .replace(/ /g, ' ') +
+        ', ' +
+        now.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
       kind: 'empty',
       nodes: [],
     }
@@ -121,16 +187,22 @@ export default function App() {
   }
 
   function handleInvestigate() {
-    // From the approval popover — open the desktop view on the amber node.
-    const approvalNode = SESSIONS.falcon9.nodes.find(
-      (n) => n.id === APPROVAL_NODE_ID,
-    )
-    setInvestigation({ node: approvalNode, isApprovalContext: true })
+    if (mode === 'demo') {
+      const approvalNode = SESSIONS.falcon9.nodes.find(
+        (n) => n.id === APPROVAL_NODE_ID,
+      )
+      setInvestigation({ node: approvalNode, isApprovalContext: true })
+    } else {
+      const approvalNode = realAgent.nodes.find(
+        (n) => states[n.id] === 'needs-approval',
+      )
+      if (approvalNode) {
+        setInvestigation({ node: approvalNode, isApprovalContext: true })
+      }
+    }
   }
 
   function handleSeeTask(node) {
-    // From the selection popover — open the desktop view on whichever node
-    // the user clicked.
     setInvestigation({ node, isApprovalContext: false })
   }
 
@@ -145,8 +217,28 @@ export default function App() {
     setTimeout(approve, 350)
   }
 
+  function handleModeChange(newMode) {
+    if (newMode === mode) return
+    setMode(newMode)
+    // Reset state when switching modes
+    setSubmitted(false)
+    setSubmittedPrompt('')
+    setThinking(false)
+    setResponseText('')
+    setInvestigation(null)
+    setActiveSessionId('new')
+    setChatOpen(false)
+    setAskNousData(null)
+  }
+
   const isFalcon9 = activeSessionId === 'falcon9'
+  const isRealSession = activeSessionId === 'real-session'
   const showGraph = activeSession.kind !== 'empty'
+
+  const effectiveApprovalNodeId =
+    mode === 'demo'
+      ? APPROVAL_NODE_ID
+      : realAgent.nodes.find((n) => states[n.id] === 'needs-approval')?.id
 
   return (
     <div className="canvas">
@@ -165,8 +257,12 @@ export default function App() {
         <NodeGraph
           session={activeSession}
           runtimeStates={states}
-          approvalPending={isFalcon9 && approvalPending && !investigation}
-          approvalNodeId={APPROVAL_NODE_ID}
+          approvalPending={
+            (isFalcon9 || isRealSession) &&
+            approvalPending &&
+            !investigation
+          }
+          approvalNodeId={effectiveApprovalNodeId}
           compressed={!!investigation}
           onApprove={approve}
           onInvestigate={handleInvestigate}
@@ -179,19 +275,29 @@ export default function App() {
         {chatOpen && !investigation && (
           <ChatPanel
             key="chat-panel"
-            taskName="Falcon 9 Review"
-            promptText={PROMPT_HINT}
-            responseText={responseText}
-            thinking={thinking}
+            mode={mode}
+            taskName={
+              mode === 'demo'
+                ? 'Falcon 9 Review'
+                : submittedPrompt.slice(0, 30) || 'AI Task'
+            }
+            promptText={mode === 'demo' ? PROMPT_HINT : submittedPrompt}
+            responseText={currentResponseText}
+            thinking={currentThinking}
             askNousData={askNousData}
             onAskNousConsumed={() => setAskNousData(null)}
+            askNousFn={mode === 'real' ? realAgent.askNous : null}
           />
         )}
       </AnimatePresence>
 
       <AnimatePresence>
         {!submitted && (
-          <PromptBar key="prompt-bar" submitted={false} onSubmit={handleSubmit} />
+          <PromptBar
+            key="prompt-bar"
+            submitted={false}
+            onSubmit={handleSubmit}
+          />
         )}
       </AnimatePresence>
 
@@ -199,6 +305,7 @@ export default function App() {
         {investigation && (
           <InvestigatePanel
             key="investigate"
+            mode={mode}
             node={investigation.node}
             isApprovalContext={investigation.isApprovalContext}
             onClose={() => setInvestigation(null)}
@@ -211,6 +318,8 @@ export default function App() {
         {settingsOpen && (
           <SettingsPanel
             key="settings"
+            mode={mode}
+            onModeChange={handleModeChange}
             onClose={() => setSettingsOpen(false)}
           />
         )}

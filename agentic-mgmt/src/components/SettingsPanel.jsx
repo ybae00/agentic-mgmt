@@ -205,7 +205,7 @@ const NAV_ICONS = {
   ),
 }
 
-export default function SettingsPanel({ onClose }) {
+export default function SettingsPanel({ onClose, mode = 'demo', onModeChange }) {
   const [activeTab, setActiveTab] = useState('general')
 
   return (
@@ -259,7 +259,7 @@ export default function SettingsPanel({ onClose }) {
           </div>
 
           <div className="settings-content-body">
-            {activeTab === 'general' && <GeneralTab />}
+            {activeTab === 'general' && <GeneralTab mode={mode} onModeChange={onModeChange} />}
             {activeTab === 'mcp' && <McpTab />}
             {activeTab === 'agents' && <PlaceholderTab label="Agents" />}
             {activeTab === 'models' && <PlaceholderTab label="Models" />}
@@ -272,7 +272,7 @@ export default function SettingsPanel({ onClose }) {
   )
 }
 
-function GeneralTab() {
+function GeneralTab({ mode, onModeChange }) {
   const [systemNotifs, setSystemNotifs] = useState(true)
   const [warningNotifs, setWarningNotifs] = useState(false)
   const [completionSound, setCompletionSound] = useState(true)
@@ -280,6 +280,44 @@ function GeneralTab() {
 
   return (
     <div className="settings-general">
+      <section className="settings-section">
+        <div className="settings-section-title">Mode</div>
+        <div className="settings-row">
+          <div className="settings-row-text">
+            <div className="settings-row-label">Application Mode</div>
+            <div className="settings-row-desc">
+              <strong>Demo</strong> runs a scripted scenario. <strong>Real</strong> uses live AI (Claude), web search, and functional desktop apps.
+            </div>
+          </div>
+          <div className="settings-mode-toggle">
+            <button
+              className={`settings-mode-btn ${mode === 'demo' ? 'active' : ''}`}
+              onClick={() => onModeChange?.('demo')}
+              type="button"
+            >
+              Demo
+            </button>
+            <button
+              className={`settings-mode-btn ${mode === 'real' ? 'active' : ''}`}
+              onClick={() => onModeChange?.('real')}
+              type="button"
+            >
+              Real
+            </button>
+          </div>
+        </div>
+        {mode === 'real' && (
+          <div className="settings-row">
+            <div className="settings-row-text">
+              <div className="settings-row-label">API Configuration</div>
+              <div className="settings-row-desc">
+                Set ANTHROPIC_API_KEY and TAVILY_API_KEY in your Vercel environment variables, or in a local .env file when using <code>vercel dev</code>.
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
       <section className="settings-section">
         <div className="settings-section-title">Account</div>
         <div className="settings-row">

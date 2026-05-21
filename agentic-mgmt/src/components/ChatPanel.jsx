@@ -92,8 +92,10 @@ function generateResponse(node) {
 }
 
 export default function ChatPanel({
+  mode = 'demo',
   taskName, promptText, responseText, thinking,
   askNousData, onAskNousConsumed,
+  askNousFn,
 }) {
   const [tabs, setTabs] = useState([
     { id: 1, name: taskName || 'New task', prompt: promptText, isNew: false },
@@ -129,12 +131,19 @@ export default function ChatPanel({
     setAskNousThinking(true)
     setAskNousResponse(null)
 
-    if (askTimerRef.current) clearTimeout(askTimerRef.current)
-    askTimerRef.current = setTimeout(() => {
-      setAskNousThinking(false)
-      setAskNousResponse(generateResponse(node))
-      askTimerRef.current = null
-    }, 1200)
+    if (mode === 'real' && askNousFn) {
+      askNousFn(node, askNousData.question).then((answer) => {
+        setAskNousThinking(false)
+        setAskNousResponse(answer)
+      })
+    } else {
+      if (askTimerRef.current) clearTimeout(askTimerRef.current)
+      askTimerRef.current = setTimeout(() => {
+        setAskNousThinking(false)
+        setAskNousResponse(generateResponse(node))
+        askTimerRef.current = null
+      }, 1200)
+    }
 
     onAskNousConsumed?.()
   }, [askNousData])
@@ -192,6 +201,9 @@ export default function ChatPanel({
       {/* Header */}
       <motion.div className="chat-header" {...(isNewChat ? {} : dissolve)}>
         <span className="chat-title">Tasks</span>
+        {mode === 'real' && (
+          <span className="chat-mode-badge">REAL</span>
+        )}
         <button className="chat-iconbtn" type="button" aria-label="Fold panel">
           <img src={rightFoldIcon} alt="" />
         </button>

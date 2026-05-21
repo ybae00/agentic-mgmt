@@ -413,3 +413,44 @@
   font-weight: 400;
   margin: 0;
 }
+
+/* --- Mode toggle ----------------------------------------------------- */
+.settings-mode-toggle {
+  display: flex;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.settings-mode-btn {
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+  background: #fff;
+  color: #777;
+}
+
+.settings-mode-btn:first-child {
+  border-right: 1px solid #e0e0e0;
+}
+
+.settings-mode-btn.active {
+  background: #111;
+  color: #fff;
+}
+
+.settings-mode-btn:hover:not(.active) {
+  background: #f5f5f5;
+}
+
+.settings-row code {
+  font-size: 11px;
+  padding: 1px 4px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace;
+}
